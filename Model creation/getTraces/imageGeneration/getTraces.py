@@ -146,6 +146,10 @@ def dumpAnalysis(result, elem):
         print("[WARNING] It seems someone created "+elem+".third faster")
         return False
 
+def removeCapture(elem):
+    print("[INFO] Removing "+elem+".pcap")
+    os.remove(dumpspath+elem+'.onit')
+
 def main():
     input = readCsv(filepath)
     for elem in input:
@@ -166,6 +170,7 @@ def main():
         else:
             if (not createDown(elem)):
                 continue
+        removeCapture(elem)
 
 if __name__ == "__main__":
 	main()
