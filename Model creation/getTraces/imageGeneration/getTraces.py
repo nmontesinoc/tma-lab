@@ -162,7 +162,7 @@ def main():
         endCapture()
         if (not createIndicatorsOfAnalysed(elem)):
             continue
-        removeIndicatorsOfCurrentAnalysis()
+        removeIndicatorsOfCurrentAnalysis(elem)
         if (websiteUp):
             result = analyzeCapture(elem)
             if (not dumpAnalysis(result, elem)):
