@@ -89,6 +89,7 @@ def endCapture():
             os.kill(int(pid), signal.SIGTERM)
     except subprocess.CalledProcessError:
         print("[WARNING] No active tcpdump found. That's strange.")
+    sleep(1)
 
 def createIndicatorsOfAnalysed(elem):
     print("[INFO] Creating "+elem+".done")
@@ -152,6 +153,7 @@ def removeCapture(elem):
 
 def main():
     input = readCsv(filepath)
+    sleep(2)
     for elem in input:
         if (isAlreadyAnalized(elem)):
             continue
