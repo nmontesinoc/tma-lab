@@ -80,6 +80,7 @@ def removeIndicatorsOfCurrentAnalysis(elem):
     os.remove(tmppath+elem+'.onit')
 
 def startCapture(elem):
+    print("tcpdump started "+elem)
     subprocess.Popen(['tcpdump', '-i', 'eth0', 'src', 'port', '443', 'or', 'src', 'port', '80', 'or', 'dst', 'port', '443', 'or', 'dst', 'port', '80', '-w', dumpspath + elem + '.pcap'])
 
 def endCapture():
