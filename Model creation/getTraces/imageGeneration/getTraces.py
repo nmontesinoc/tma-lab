@@ -148,7 +148,7 @@ def dumpAnalysis(result, elem):
 
 def removeCapture(elem):
     print("[INFO] Removing "+elem+".pcap")
-    os.remove(dumpspath+elem+'.onit')
+    os.remove(dumpspath+elem+'.pcap')
 
 def main():
     input = readCsv(filepath)
