@@ -66,7 +66,6 @@ def executeChrome(elem):
 
 def createDown(elem):
     try:
-        os.remove(dumpspath+elem+'.pcap')
         print("[WARNING] It seems "+elem+"was down. Creating "+elem+".down")
         f = open(downpath+elem+'.down', 'x')
         f.close()
@@ -80,7 +79,6 @@ def removeIndicatorsOfCurrentAnalysis(elem):
     os.remove(tmppath+elem+'.onit')
 
 def startCapture(elem):
-    print("tcpdump started "+elem)
     subprocess.Popen(['tcpdump', '-i', 'eth0', 'src', 'port', '443', 'or', 'src', 'port', '80', 'or', 'dst', 'port', '443', 'or', 'dst', 'port', '80', '-w', dumpspath + elem + '.pcap'])
 
 def endCapture():
@@ -90,8 +88,7 @@ def endCapture():
             os.kill(int(pid), signal.SIGTERM)
     except subprocess.CalledProcessError:
         print("[WARNING] No active tcpdump found. That's strange.")
-    sleep(1)
-
+    
 def createIndicatorsOfAnalysed(elem):
     print("[INFO] Creating "+elem+".done")
     try:
@@ -154,7 +151,6 @@ def removeCapture(elem):
 
 def main():
     input = readCsv(filepath)
-    sleep(2)
     for elem in input:
         if (isAlreadyAnalized(elem)):
             continue
