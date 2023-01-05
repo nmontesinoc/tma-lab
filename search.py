@@ -9,6 +9,6 @@ def infer(model, list):
 
 def main():
     model = Doc2Vec.load("model.doc2vec")
-    # in some way, a dictionary is created with the ips...
+    # in some way, a list is created with the ips...
     list = ["8.8.8.8", "8.8.4.4"]
     result = infer(model, list)
