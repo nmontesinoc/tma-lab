@@ -5,6 +5,11 @@ import csv, sys
 
 es = Elasticsearch(["http://0.0.0.0:9200"], basic_auth=('elastic', 'changeme'))
 print(es.cluster.health())
+es.indices.create(
+    index="flows",
+    settings=configurations["settings"],
+    mappings=configurations["mappings"],
+)
 upload_list = []
 # Load all csv data
 with open('data2.csv', newline='') as csvfile:
@@ -19,7 +24,6 @@ with open('data2.csv', newline='') as csvfile:
     # drop headers from data_list
     data_list.pop(0)
     data_list.pop(0)
-
     for item in data_list: # iterate over each row/item in the csv
 
         item_dict = {}
