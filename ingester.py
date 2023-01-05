@@ -3,7 +3,7 @@ from elasticsearchindexconfigurations import configurations
 import csv, sys
 
 
-es = Elasticsearch(["http://0.0.0.0:9200"], basic_auth=('elastic', 'changeme'))
+es = Elasticsearch(["http://0.0.0.0:9200"])
 print(es.cluster.health())
 upload_list = []
 # Load all csv data
