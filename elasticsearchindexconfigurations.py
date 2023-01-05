@@ -70,8 +70,8 @@ configurations = {
             "eng":{"type":"ip"},
             "exid":{"type":"keyword"},
         "tr":{"type":"date","format":"mm:ss.SSSZ"},
-            "Sub app":{"type":"keyword"},
             "Application":{"type":"keyword"},
+            "Sub/App":{"type":"keyword"},
                 }
             }
 }
