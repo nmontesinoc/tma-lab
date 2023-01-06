@@ -1,9 +1,10 @@
-from elasticsearch import Elasticsearch,  helpers
+from elasticsearch import Elasticsearch,helpers
+from datetime import datetime
 from elasticsearchindexconfigurations import configurations
 import csv, sys
+import os 
 
-
-    
+os.system('head -n-3 data2.csv > data3.csv')    
 es = Elasticsearch(["http://0.0.0.0:9200"])
 print(es.cluster.health())
 es.indices.create(
@@ -14,7 +15,7 @@ es.indices.create(
 index_name = "flows"
 header = ["ts","te","td","sa","da","sp","dp","pr","flg","fwd","stos","ipkt","ibyt","opkt","obyt","in","out","sas","das","smk","dmk","dtos","dir","nh","nhb","svln","dvln","ismc","odmc","idmc","osmc","mpls1","mpls2","mpls3","mpls4","mpls5","mpls6","mpls7","mpls8","mpls9","mpls10","cl","sl","al","ra","eng","exid","tr","Application","Sub/App"]
 def generate_docs():
-    with open("data2.csv", "r") as fi:
+    with open("data3.csv", "r") as fi:
 
         reader = csv.DictReader(fi,delimiter=",",fieldnames = header)
         actions = []
@@ -25,33 +26,34 @@ def generate_docs():
         for row in reader:
             doc = {
                 "_index": index_name,
+                "_type":"document",
                 "_source":{
-                    "ts":row["ts"],
-                    "te":row["te"],
-                    "td":row["td"],
+                    "ts":datetime.strptime(row["ts"], '%d/%m/%Y %H:%M'),
+                    "te":datetime.strptime(row["te"], '%d/%m/%Y %H:%M'),
+                    "td":float(row["td"]),
                     "sa":row["sa"],
                     "da":row["da"],
-                    "sp":row["sp"],
-                    "dp":row["dp"],
+                    "sp":int(row["sp"]),
+                    "dp":int(row["dp"]),
                     "pr":row["pr"],
                     "flg":row["flg"],
-                    "fwd":row["fwd"],
-                    "stos":row["stos"],
-                    "ipkt":row["ipkt"],
-                    "ibyt":row["ipkt"],
-                    "opkt":row["opkt"],
-                    "obyt":row["obyt"],
-                    "in":row["in"],
-                    "out":row["out"],
-                    "sas":row["sas"],
-                    "das":row["das"],
-                    "smk":row["smk"],
-                    "dmk":row["dmk"],
-                    "dtos":row["dtos"],
+                    "fwd":int(row["fwd"]),
+                    "stos":int(row["stos"]),
+                    "ipkt":int(row["ipkt"]),
+                    "ibyt":int(row["ipkt"]),
+                    "opkt":int(row["opkt"]),
+                    "obyt":int(row["obyt"]),
+                    "in":int(row["in"]),
+                    "out":int(row["out"]),
+                    "sas":int(row["sas"]),
+                    "das":int(row["das"]),
+                    "smk":int(row["smk"]),
+                    "dmk":int(row["dmk"]),
+                    "dtos":int(row["dtos"]),
                     "dir":row["dir"],
                     "nh":row["nh"],
                     "nhb":row["nhb"],
-                    "svln":row["svln"],
+                    "svln":int(row["svln"]),
                     "dvln":row["dvln"],
                     "ismc":row["ismc"],
                     "odmc":row["odmc"],
@@ -68,12 +70,12 @@ def generate_docs():
                     "mpls9":row["mpls9"],
                     "mpls10":row["mpls10"],
                     "cl":row["cl"],
-                    "sl":row["sl"],
-                    "al":row["al"],
+                    "sl":int(row["sl"]),
+                    "al":int(row["al"]),
                     "ra":row["ra"],
                     "eng":row["eng"],
                     "exid":row["exid"],
-                    "tr":row["tr"],
+                    "tr":datetime.strptime(row["tr"], '%M:%S.%f'),
                     "Application":row["Application"],
                     "Sub/App":row["Sub/App"]
                 },
