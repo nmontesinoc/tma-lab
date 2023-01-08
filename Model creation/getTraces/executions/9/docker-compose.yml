@@ -1,0 +1,12 @@
+version: '3'
+services:
+        gettraces-ip:
+                image: "gettraces:ip"
+                volumes:
+                      - "./appdata/file:/root/file"
+                      - "./appdata/dumps:/root/dumps"
+                      - "./appdata/tmp:/root/tmp"
+                      - "./appdata/done:/root/done"
+                      - "./appdata/down:/root/down"
+                      - "./appdata/third:/root/third"
+                shm_size: '2gb'
