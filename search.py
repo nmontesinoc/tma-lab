@@ -5,7 +5,7 @@ from nltk.tokenize import word_tokenize
 def infer(model, list):
     test_data = word_tokenize(input)
     v1 = model.infer_vector(test_data)
-    model.docvecs.most_similar([v1], topn = 7425)[0][0]
+    return model.docvecs.most_similar([v1], topn = 7425)[0][0]
 
 def main():
     model = Doc2Vec.load("model.doc2vec")

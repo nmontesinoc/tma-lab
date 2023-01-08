@@ -4,6 +4,9 @@ import sys
 import re
 import netflow
 import socket
+# for Doc2Vec model loading and inference
+from gensim.models.doc2vec import Doc2Vec
+from nltk.tokenize import word_tokenize
 
 FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -169,6 +172,10 @@ def by_time_from_collector(reader, seconds):
             X.append(x[local_ip])
     return X, aggregated
 
+def infer(model, list):
+    test_data = word_tokenize(input)
+    v1 = model.infer_vector(test_data)
+    return model.docvecs.most_similar([v1], topn = 7425)[0][0]
 
 def main_without_file():
     if len(sys.argv) < 3:
@@ -210,6 +217,11 @@ def main_without_file():
     print("Total number of flows: ", cnt)
     print(aggregated)
 
+    #not tested yet
+    model = Doc2Vec.load("model.doc2vec")
+    for session in res:
+        print(infer(model, session))
+
 
 def main():
     if len(sys.argv) < 4:
@@ -248,6 +260,11 @@ def main():
         print(key + " ------------------------------------------------ \n")
         for el in value:
             print(el)
+    
+    #not tested yet
+    model = Doc2Vec.load("model.doc2vec")
+    for session in res:
+        print(infer(model, session))
         
 
 if __name__ == '__main__':
