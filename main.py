@@ -268,6 +268,6 @@ def main():
         
 
 if __name__ == '__main__':
-    main_without_file()
+    main()
 
 
