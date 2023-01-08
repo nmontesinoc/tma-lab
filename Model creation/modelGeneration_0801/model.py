@@ -47,6 +47,7 @@ def main():
     model = createDoc2Vec()
     #tagged_data can be joined as first+second+third+fourth...
     trainDoc2Vec(model, tagged_data)
+    saveDoc2Vec(model)
 
 if __name__ == "__main__":
 	main()
