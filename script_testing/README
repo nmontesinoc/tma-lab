@@ -1,0 +1,10 @@
+Requirements:
+-Install (with dpkg) the provided .deb
+-Install (with pip) selenium, panda
+-Install (with apt) softflowd
+
+How to:
+- sudo softflowd -v 5 -n 127.0.0.1:2055 -i eth0 -d
+- python3 main.py
+
+(THE PROJECT MUST BE RUNNING)
