@@ -4,7 +4,7 @@ import sys
 import re
 import netflow
 import socket
-# for Doc2Vec model loading and inference
+for Doc2Vec model loading and inference
 from gensim.models.doc2vec import Doc2Vec
 
 FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -12,6 +12,28 @@ FORMAT = "%Y-%m-%d %H:%M:%S"
 IP_ADDRESSES = []
 
 PATTERN = None
+
+STARTING_TIME = datetime.datetime.now()
+
+IP_PROTOCOLS = {
+    1: "ICMP",
+    6: "TCP",
+    17: "UDP",
+    58: "ICMPv6"
+}
+
+def parsedate(x):
+    if not isinstance(x, datetime.datetime):
+        x = datetime.datetime.strptime(x, FORMAT)
+    return x
+
+def tsdiff(x, y):
+    return (parsedate(x) - parsedate(y)).total_seconds()
+
+def tsadd(x, seconds):
+    d = datetime.timedelta(seconds=seconds)
+    nd = parsedate(x) + d
+    return nd.strftime(FORMAT)
 
 def int_to_ip(ip):
     byte_4 = int((ip/256**3)%256) 
@@ -23,9 +45,10 @@ def int_to_ip(ip):
 def collect_30_packets():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind(("0.0.0.0", 2055))
-    payload, client = sock.recvfrom(4096)  # experimental, tested with 1464 bytes
+    # payload, client = sock.recvfrom(4096)  # experimental, tested with 1464 bytes
 
     flows_collect=[]
+    raw_flows = []
 
     i = 0
 
@@ -35,20 +58,44 @@ def collect_30_packets():
             payload, client = sock.recvfrom(4096)  # experimental, tested with 1464 bytes
             p = netflow.parse_packet(payload)  # Test result: <ExportPacket v5 with 30 records>
             for flow in p.flows:
+
+                duration = (flow.LAST_SWITCHED / 1000) - (flow.FIRST_SWITCHED / 1000)
+
+                start_time = flow.FIRST_SWITCHED // 1000
+                end_time = flow.LAST_SWITCHED // 1000
+
+                start_time_formatted = tsadd(STARTING_TIME, start_time)
+                end_time_formatted = tsadd(STARTING_TIME, end_time)
+
                 src_addr = int_to_ip(flow.IPV4_SRC_ADDR)
                 dst_addr = int_to_ip(flow.IPV4_DST_ADDR)
-                end_time = flow.LAST_SWITCHED // 1000
+                
                 src_port = flow.SRC_PORT
                 dst_port = flow.DST_PORT
+
+                proto = flow.PROTO
+                flags = flow.TCP_FLAGS
+
                 packets = flow.IN_PACKETS
+                bytess = flow.IN_OCTETS
+
+                time_received = p.header.timestamp
+                time_received = datetime.datetime.fromtimestamp(time_received)
+                time_received = time_received.strftime(FORMAT)
+
                 flow = [end_time, src_addr, dst_addr, src_port, dst_port, packets]
+                raw_flaw = [start_time_formatted, end_time_formatted, duration, src_addr, dst_addr, src_port, dst_port, IP_PROTOCOLS.get(proto, 'UNKNOWN'), flags, packets, bytess, time_received]
                 flows_collect.append(flow)
-            print(p)
-        except:
-            print("ERROR")
+                raw_flows.append(raw_flaw)
+        except Exception as e:
+            print("ERROR", e)
         i += 1
 
-    return flows_collect
+    print(raw_flows)
+    for flow in raw_flows:
+        print(flow)
+
+    return flows_collect, raw_flows
 
 def match_ip_format(ip):
     # Replace X with a regex that matches any number from 0 to 255
@@ -63,16 +110,6 @@ def is_in_ip_addresses(ip):
         return match_ip_format(ip)
     else:
         return ip in IP_ADDRESSES
-
-
-def parsedate(x):
-    if not isinstance(x, datetime.datetime):
-        x = datetime.datetime.strptime(x, FORMAT)
-    return x
-
-
-def tsdiff(x, y):
-    return (parsedate(x) - parsedate(y)).total_seconds()
 
 
 def read_data(filename):
@@ -198,7 +235,7 @@ def main_without_file():
         for i in range(2, len(sys.argv)):
             IP_ADDRESSES.append(sys.argv[i])
     
-    data = collect_30_packets()
+    data, raw_flows = collect_30_packets()
         
     res, aggregated = by_time_from_collector(data, seconds)
 
@@ -216,8 +253,18 @@ def main_without_file():
     print(aggregated)
 
     model = Doc2Vec.load("model.doc2vec")
-    for session in res:
-        print(infer(model, session))
+
+    classified = []
+
+    for key, value in aggregated.items():
+        for session in value:
+            classified.append((infer(model, session[0]), key))
+
+    # Here goes the injection to elk part
+    # classified - a list of tuples (application, local_ip)
+    # raw_flows - a list of tuples go to line 85 to see the format
+
+
 
 
 def main():
@@ -259,11 +306,17 @@ def main():
             print(el)
     
     model = Doc2Vec.load("model.doc2vec")
-    for session in res:
-        print(infer(model, session))
-        
+
+    classified = []
+
+    for key, value in aggregated.items():
+        for session in value:
+            classified.append( (infer(model, session[0]), key))
+
+    # Here goes the injection to elk part
+    # classified - a list of tuples (application, local_ip)
+
+
 
 if __name__ == '__main__':
     main_without_file()
-
-
