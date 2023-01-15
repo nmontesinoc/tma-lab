@@ -52,7 +52,7 @@ def collect_30_packets():
 
     i = 0
 
-    while i < 5:
+    while i < 20:
         print("TUKA")
         try:
             payload, client = sock.recvfrom(4096)  # experimental, tested with 1464 bytes
@@ -248,7 +248,8 @@ def main_without_file():
     for key, value in aggregated.items():
         for session in value:
             classified.append((infer(model, list(session[0])), key))
-
+            print(list(session[0]))
+            print(infer(model, list(session[0])))
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
     # raw_flows - a list of tuples go to line 85 to see the format
@@ -289,11 +290,13 @@ def main():
     for key, value in aggregated.items():
         for session in value:
             classified.append( (infer(model, list(session[0])), key))
+            print(list(session[0]))
+            print(infer(model,list(session[0])))
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
 
 
 if __name__ == '__main__':
-    # main()
-    # main_without_file()
+    #main()
+    main_without_file()
