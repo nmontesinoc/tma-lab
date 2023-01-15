@@ -4,7 +4,7 @@ import sys
 import re
 import netflow
 import socket
-for Doc2Vec model loading and inference
+#for Doc2Vec model loading and inference
 from gensim.models.doc2vec import Doc2Vec
 
 FORMAT = "%Y-%m-%d %H:%M:%S"
