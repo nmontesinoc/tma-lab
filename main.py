@@ -143,7 +143,7 @@ def by_time(filename, seconds):
             remote_ip = row[3]
         
         if local_ip not in x:
-            x[local_ip] = []
+            x[local_ip] = set()
             prev_dict[local_ip] = [row[0], 0]
 
         if local_ip not in aggregated:
@@ -152,12 +152,12 @@ def by_time(filename, seconds):
         td = tsdiff(row[0], prev_dict[local_ip][0])
         if row[5] == "80" or row[6] == "80" or row[5] == "443" or row[6] == "443":
             if td < seconds:
-                x[local_ip].append(remote_ip)
+                x[local_ip].add(remote_ip)
                 prev_dict[local_ip][1] += int(row[11])
             else:
                 X.append(x[local_ip])
                 aggregated[local_ip].append((x[local_ip], prev_dict[local_ip][1]))
-                x[local_ip] = [remote_ip]
+                x[local_ip] = {remote_ip}
                 prev_dict[local_ip][1] = int(row[5])
             prev_dict[local_ip][0] = row[0]
 
@@ -184,7 +184,7 @@ def by_time_from_collector(reader, seconds):
             remote_ip = row[1]
         
         if local_ip not in x:
-            x[local_ip] = []
+            x[local_ip] = set()
             prev_dict[local_ip] = [row[0], 0]
 
         if local_ip not in aggregated:
@@ -194,12 +194,12 @@ def by_time_from_collector(reader, seconds):
         if row[3] == 80 or row[4] == 80 or row[3] == 443 or row[4] == 443:
             print("TUKA")
             if td < seconds:
-                x[local_ip].append(remote_ip)
+                x[local_ip].add(remote_ip)
                 prev_dict[local_ip][1] += row[5]
             else:
                 X.append(x[local_ip])
                 aggregated[local_ip].append((x[local_ip], prev_dict[local_ip][1]))
-                x[local_ip] = [remote_ip]
+                x[local_ip] = {remote_ip}
                 prev_dict[local_ip][1] = row[5]
             prev_dict[local_ip][0] = row[0]
 
@@ -240,17 +240,6 @@ def main_without_file():
     res, aggregated = by_time_from_collector(data, seconds)
 
     cnt = 0
-    for r in res:
-        cnt += len(r)
-        print(r)
-
-    for key, value in aggregated.items():
-        print(key + " ------------------------------------------------ \n")
-        for el in value:
-            print(el)
-
-    print("Total number of flows: ", cnt)
-    print(aggregated)
 
     model = Doc2Vec.load("model.doc2vec")
 
@@ -258,13 +247,11 @@ def main_without_file():
 
     for key, value in aggregated.items():
         for session in value:
-            classified.append((infer(model, session[0]), key))
+            classified.append((infer(model, list(session[0])), key))
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
     # raw_flows - a list of tuples go to line 85 to see the format
-
-
 
 
 def main():
@@ -293,30 +280,20 @@ def main():
 
     res, aggregated = by_time(filename, seconds)
     cnt = 0
-    for r in res:
-        cnt += len(r)
-        print(r)
 
-    print("Total number of flows: ", cnt)
-    print(aggregated)
-
-    for key, value in aggregated.items():
-        print(key + " ------------------------------------------------ \n")
-        for el in value:
-            print(el)
-    
     model = Doc2Vec.load("model.doc2vec")
+    print(res)
 
     classified = []
 
     for key, value in aggregated.items():
         for session in value:
-            classified.append( (infer(model, session[0]), key))
+            classified.append( (infer(model, list(session[0])), key))
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
 
 
-
 if __name__ == '__main__':
-    main_without_file()
+    # main()
+    # main_without_file()
