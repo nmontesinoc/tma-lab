@@ -83,7 +83,7 @@ def collect_30_packets():
                 time_received = datetime.datetime.fromtimestamp(time_received)
                 time_received = time_received.strftime(FORMAT)
 
-                flow = [end_time, src_addr, dst_addr, src_port, dst_port, packets]
+                flow = [start_time, src_addr, dst_addr, src_port, dst_port, packets]
                 raw_flaw = [start_time_formatted, end_time_formatted, duration, src_addr, dst_addr, src_port, dst_port, IP_PROTOCOLS.get(proto, 'UNKNOWN'), flags, packets, bytess, time_received]
                 flows_collect.append(flow)
                 raw_flows.append(raw_flaw)
