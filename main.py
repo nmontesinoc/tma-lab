@@ -298,6 +298,12 @@ def main():
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
+    es = get_client()
+    create_index(es)
+    for flows in raw_flows:
+        insert_row(es,flows[0],flows[1],flows[2],flows[3],flows[4],flows[5],flows[6],flows[7],flows[8],flows[9],flows[10],flows[11])
+    for classified_row in classified:
+        insert_classified_row(es,classified_row[0],classified_row[1])
 
 
 if __name__ == '__main__':
