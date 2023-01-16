@@ -51,10 +51,19 @@ def insert_row(es,ts,te,td,sa,da,sp,dp,pr,flg,ipkt,ibyt,tr,Application):
         
         
 
+def insert_classified_row(es,App,localip):
+    print(es.cluster.health())
+    index_name="taggedflows"
+    es.index(
+            index=index_name,
+            document = {
+                "Application":App,
+                "local_ip":localip
+                })
 
     
 index_name = "flows"
-insert_row("16/10/2022 21:32","16/10/2022 21:32",0.022,"10.0.2.15","152.199.21.141",36402,443,"TCP",".....RS.",2,100,"35:01.1","Twitter")    
+#insert_row("16/10/2022 21:32","16/10/2022 21:32",0.022,"10.0.2.15","152.199.21.141",36402,443,"TCP",".....RS.",2,100,"35:01.1","Twitter")    
 result = es.count(index=index_name)
 print(result.body['count'])
 

@@ -249,6 +249,7 @@ def main_without_file():
         for session in value:
             classified.append((infer(model, list(session[0])), key))
     es = get_client()
+    create_index(es)
     for flows in raw_flows:
         insert_row(es,flows[0],flows[1],flows[2],flows[3],flows[4],flows[5],flows[6],flows[7],flows[8],flows[9],flows[10],flows[11])
     for classified_row in classified:
