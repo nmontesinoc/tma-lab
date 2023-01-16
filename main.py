@@ -235,6 +235,10 @@ def main_without_file():
     else:
         for i in range(2, len(sys.argv)):
             IP_ADDRESSES.append(sys.argv[i])
+
+    es = get_client()
+#    create_index(es)
+
     while(True): 
         print("Iteration started")
         data, raw_flows = collect_30_packets()
@@ -253,12 +257,10 @@ def main_without_file():
                 classified.append((infer(model, list(session[0])), key))
                 print(list(session[0]))
                 print(infer(model, list(session[0])))
-        es = get_client()
-        create_index(es)
         for flows in raw_flows:
             insert_row(es,flows[0],flows[1],flows[2],flows[3],flows[4],flows[5],flows[6],flows[7],flows[8],flows[9],flows[10],flows[11])
         for classified_row in classified:
-            insert_classified_row(es,classified_row[0],classified_row[1])
+            insert_classified_row(es,classified_row[0],classified_row[1],datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
@@ -306,7 +308,7 @@ def main():
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
     es = get_client()
-    create_index(es)
+#    create_index(es)
     for flows in raw_flows:
         insert_row(es,flows[0],flows[1],flows[2],flows[3],flows[4],flows[5],flows[6],flows[7],flows[8],flows[9],flows[10],flows[11])
     for classified_row in classified:

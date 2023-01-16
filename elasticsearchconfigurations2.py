@@ -20,20 +20,20 @@ configurations = {
     },
     "mappings": {
         "properties": {
-            "timestart": {"type": "date","format":"yyyy/MM/dd HH:mm||yyyy-MM-dd||epoch_millis "},
-            "timeend": {"type":"date","format": "yyyy/MM/dd HH:mm||yyyy-MM-dd||epoch_millis"},
+            "ts": {"type": "date","format":"yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis "},
+            "te": {"type":"date","format": "yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"},
             
-            "timeduration": {"type":"float"},
-            "sourcedaddr": {"type":"ip","index":"true","null_value":"0.0.0.0"},
+            "td": {"type":"float"},
+            "sa": {"type":"ip","index":"true","null_value":"0.0.0.0"},
         
-            "dstaddr": {"type":"ip","index":"true","null_value":"0.0.0.0"},
-            "srcport": {"type":"integer"},
-            "dstport": {"type":"integer"},
-            "protocol": {"type":"keyword"},
-            "flag": {"type":"keyword"},
+            "da": {"type":"ip","index":"true","null_value":"0.0.0.0"},
+            "sp": {"type":"integer"},
+            "dp": {"type":"integer"},
+            "pr": {"type":"keyword"},
+            "flg": {"type":"keyword"},
             "ipkt": {"type":"integer"},
-            "ibyte": {"type":"integer"},
-            "tr":{"type":"date","format":"yyyy-MM-dd'T'HH:mm:ss.S'Z'||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis||mm:ss.SZ||date_optional_time"}
+            "ibyt": {"type":"integer"},
+            "tr":{"type":"date","format":"yy-MM-dd HH:mm:ss||yyyy-MM-dd'T'HH:mm:ss.S'Z'||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis||mm:ss.SZ||date_optional_time"}
         
     
                 }
@@ -66,7 +66,8 @@ configurations2 = {
             
             "Application": {"type":"keyword"},
     
-            "local_ip": {"type":"ip","index":"true","null_value":"0.0.0.0"}
+            "local_ip": {"type":"ip","index":"true","null_value":"0.0.0.0"},
+            "datetime": {"type":"date","format":"dd/MM/yyyy HH:mm:ss"}
 
 
                 }
