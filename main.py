@@ -6,7 +6,7 @@ import netflow
 import socket
 for Doc2Vec model loading and inference
 from gensim.models.doc2vec import Doc2Vec
-
+from singleingester2 import create_index,insert_row,insert_classified_row,get_client 
 FORMAT = "%Y-%m-%d %H:%M:%S"
 
 IP_ADDRESSES = []
@@ -248,6 +248,11 @@ def main_without_file():
     for key, value in aggregated.items():
         for session in value:
             classified.append((infer(model, list(session[0])), key))
+    es = get_client()
+    for flows in raw_flows:
+        insert_row(es,flows[0],flows[1],flows[2],flows[3],flows[4],flows[5],flows[6],flows[7],flows[8],flows[9],flows[10],flows[11])
+    for classified_row in classified:
+        insert_classified_row(es,classified_row[0],classified_row[1])
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
