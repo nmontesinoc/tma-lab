@@ -4,7 +4,7 @@ import sys
 import re
 import netflow
 import socket
-for Doc2Vec model loading and inference
+#for Doc2Vec model loading and inference
 from gensim.models.doc2vec import Doc2Vec
 from singleingester2 import create_index,insert_row,insert_classified_row,get_client 
 FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -53,6 +53,7 @@ def collect_30_packets():
     i = 0
 
     while i < 5:
+        print(i)
         print("TUKA")
         try:
             payload, client = sock.recvfrom(4096)  # experimental, tested with 1464 bytes
@@ -83,7 +84,7 @@ def collect_30_packets():
                 time_received = datetime.datetime.fromtimestamp(time_received)
                 time_received = time_received.strftime(FORMAT)
 
-                flow = [end_time, src_addr, dst_addr, src_port, dst_port, packets]
+                flow = [start_time, src_addr, dst_addr, src_port, dst_port, packets]
                 raw_flaw = [start_time_formatted, end_time_formatted, duration, src_addr, dst_addr, src_port, dst_port, IP_PROTOCOLS.get(proto, 'UNKNOWN'), flags, packets, bytess, time_received]
                 flows_collect.append(flow)
                 raw_flows.append(raw_flaw)
@@ -234,26 +235,30 @@ def main_without_file():
     else:
         for i in range(2, len(sys.argv)):
             IP_ADDRESSES.append(sys.argv[i])
+    while(True): 
+        print("Iteration started")
+        data, raw_flows = collect_30_packets()
+            
+        res, aggregated = by_time_from_collector(data, seconds)
     
-    data, raw_flows = collect_30_packets()
-        
-    res, aggregated = by_time_from_collector(data, seconds)
 
-    cnt = 0
-
-    model = Doc2Vec.load("model.doc2vec")
-
-    classified = []
-
-    for key, value in aggregated.items():
-        for session in value:
-            classified.append((infer(model, list(session[0])), key))
-    es = get_client()
-    create_index(es)
-    for flows in raw_flows:
-        insert_row(es,flows[0],flows[1],flows[2],flows[3],flows[4],flows[5],flows[6],flows[7],flows[8],flows[9],flows[10],flows[11])
-    for classified_row in classified:
-        insert_classified_row(es,classified_row[0],classified_row[1])
+        cnt = 0
+    
+        model = Doc2Vec.load("model.doc2vec")
+    
+        classified = []
+    
+        for key, value in aggregated.items():
+            for session in value:
+                classified.append((infer(model, list(session[0])), key))
+                print(list(session[0]))
+                print(infer(model, list(session[0])))
+        es = get_client()
+        create_index(es)
+        for flows in raw_flows:
+            insert_row(es,flows[0],flows[1],flows[2],flows[3],flows[4],flows[5],flows[6],flows[7],flows[8],flows[9],flows[10],flows[11])
+        for classified_row in classified:
+            insert_classified_row(es,classified_row[0],classified_row[1])
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
@@ -295,6 +300,8 @@ def main():
     for key, value in aggregated.items():
         for session in value:
             classified.append( (infer(model, list(session[0])), key))
+            print(list(session[0]))
+            print(infer(model,list(session[0])))
 
     # Here goes the injection to elk part
     # classified - a list of tuples (application, local_ip)
@@ -307,5 +314,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    # main_without_file()
+    #main()
+    main_without_file()
